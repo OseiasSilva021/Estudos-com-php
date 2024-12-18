@@ -1,253 +1,161 @@
-# 8. Testes e Implantação 🚀
+# Composer e Gerenciamento de Dependências em PHP
 
-**Objetivo**: Garantir qualidade e preparar o sistema para produção 🔧✨
+#### **Instalação e Configuração do Composer**
+O **Composer** é uma ferramenta de gerenciamento de dependências para PHP, que facilita a instalação de bibliotecas e pacotes e o gerenciamento das versões delas. Aqui está como você pode instalá-lo e configurá-lo:
 
-A fase de testes e implantação é fundamental para garantir que seu sistema esteja funcionando corretamente e seja entregue com a maior qualidade possível, além de estar pronto para ser utilizado por usuários finais. Nessa etapa, a ênfase está na automação de testes 🧪, na preparação do ambiente de produção 🌍 e na otimização do desempenho ⚡. Abaixo, explico os conceitos chave que você deve entender e aplicar nesse processo.
+1. **Instalação**:
+   - **No Windows**: Baixe o instalador do Composer em [getcomposer.org](https://getcomposer.org/), e siga as instruções.
+   - **No Linux/macOS**: Execute o seguinte comando no terminal:
+     ```bash
+     curl -sS https://getcomposer.org/installer | php
+     ```
+   - Para torná-lo globalmente acessível, mova o arquivo para uma pasta em seu PATH:
+     ```bash
+     mv composer.phar /usr/local/bin/composer
+     ```
 
----
+2. **Verificação da instalação**:
+   Após a instalação, você pode verificar se o Composer está instalado corretamente com o comando:
+   ```bash
+   composer --version
+   ```
 
-# 1. Introdução a testes automatizados com PHPUnit 🧑‍💻
+#### **Gerenciamento de Pacotes e Dependências**
+- O Composer permite que você instale, atualize e remova pacotes de maneira simples.
+- Para instalar uma dependência, use:
+  ```bash
+  composer require nome/pacote
+  ```
+- Para atualizar todas as dependências para as versões mais recentes permitidas no `composer.json`:
+  ```bash
+  composer update
+  ```
+- Para remover uma dependência:
+  ```bash
+  composer remove nome/pacote
+  ```
 
-**PHPUnit** é uma ferramenta popular para testes automatizados em **PHP**. Testar seu código é fundamental para garantir que ele funcione conforme esperado e para evitar que novos erros sejam introduzidos durante o desenvolvimento 🔍.
+#### **Como Criar e Usar um Arquivo composer.json**
+O arquivo `composer.json` é o coração do Composer, pois define as dependências e outras configurações de seu projeto. Exemplo básico:
 
-## Passos para usar o **PHPUnit**:
-
-### Instalação 📦:
-
-Você pode instalar o **PHPUnit** via **Composer**:
-
-```bash
-composer require --dev phpunit/phpunit ^9
-```
-
-### Criando o primeiro teste 🔧: 
-
-Crie uma classe de teste para a função que deseja testar. 
-
-## Exemplo de um teste básico:
-
-```php
-use PHPUnit\Framework\TestCase;
-
-class CalculatorTest extends TestCase {
-    public function testAddition() {
-        $calculator = new Calculator();
-        $this->assertEquals(4, $calculator->add(2, 2));
-    }
+```json
+{
+  "name": "seu/projeto",
+  "description": "Descrição do seu projeto",
+  "require": {
+    "monolog/monolog": "^2.0"
+  }
 }
 ```
 
-### Rodando os testes 🏃‍♂️:
+- `"name"`: Nome do projeto.
+- `"description"`: Breve descrição do projeto.
+- `"require"`: Define as dependências que seu projeto precisa. O Composer vai instalar automaticamente as versões que atendem aos requisitos definidos aqui.
 
-Depois de criar os testes, execute o **PHPUnit** para ver se tudo funciona corretamente.
-
-```bash
-./vendor/bin/phpunit --testdox
-```
-
-## Boas práticas em testes 📜:
-
-- Escreva **testes unitários** para isolar e testar funções específicas 💡.
-- Use testes de integração para garantir que componentes do sistema interajam corretamente 🔄.
-- Sempre que adicionar novas funcionalidades ou corrigir **bugs** 🐞, escreva testes automatizados para garantir que o sistema continue funcionando corretamente 🔐.
-
----
-
-# 2. Logs e monitoramento 📊
-
-A captura de logs 📑 e o monitoramento contínuo de um sistema são essenciais para detectar falhas em tempo real ⏱️ e garantir que ele esteja funcionando como esperado.
-
-## **Logs em PHP:** Use bibliotecas como **Monolog** para gerenciar logs de forma eficiente:
-
-```bash
-composer require monolog/monolog
-```
-
-## Exemplo de configuração de log com Monolog:
+#### **Trabalhando com Bibliotecas Externas**
+Quando você adiciona uma dependência no arquivo `composer.json` (como mostrado acima), o Composer baixa e instala as bibliotecas para o diretório `vendor/`. Você pode usar essas bibliotecas em seu código com o autoload do Composer, assim:
 
 ```php
+require 'vendor/autoload.php';
+
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-$log = new Logger('app');
-$log->pushHandler(new StreamHandler('path/to/your.log', Logger::WARNING));
-$log->warning('This is a warning');
+$log = new Logger('nome_do_log');
+$log->pushHandler(new StreamHandler('app.log', Logger::WARNING));
+$log->warning('Foo');
 ```
 
-## Monitoramento 📡:
-
-Ferramentas como **New Relic**, **Sentry**, ou **Datadog** permitem que você monitore seu sistema em tempo real ⚡. 
-
-Configure alertas 🚨 para identificar e resolver problemas rapidamente 🔍.
+Este exemplo usa a biblioteca Monolog para registrar logs.
 
 ---
 
-# 3. Preparação para Produção 🔥
+### Testes em PHP
 
-Antes de colocar seu sistema em produção, há algumas etapas cruciais para garantir que ele funcione corretamente e de maneira eficiente ⚙️.
+#### **Introdução a Testes Unitários com PHPUnit**
+O **PHPUnit** é uma framework para testes unitários em PHP. Com ele, você pode escrever testes para garantir que seu código funcione como esperado.
 
-## Configurações de php.ini 🛠️
+1. **Instalação do PHPUnit**:
+   Você pode instalar o PHPUnit via Composer:
+   ```bash
+   composer require --dev phpunit/phpunit
+   ```
 
-O arquivo **php.ini** é crucial para configurar o comportamento do **PHP**. Algumas configurações comuns que você pode ajustar são:
+2. **Exemplo de Teste Unitário**:
+   Crie um arquivo de teste em `tests/CalculatorTest.php`:
+   ```php
+   <?php
+   use PHPUnit\Framework\TestCase;
 
-### Aumentar o limite de memória 💾:
+   class CalculatorTest extends TestCase {
+       public function testAddition() {
+           $this->assertEquals(4, 2 + 2);
+       }
+   }
+   ```
 
-```ini
-memory_limit = 256M
-```
+   Para rodar os testes, use o comando:
+   ```bash
+   vendor/bin/phpunit tests/CalculatorTest.php
+   ```
 
-### Habilitar log de erros 📝:
+#### **Criando Testes de Unidade, Testes de Integração e Testes de API**
+- **Testes de Unidade**: Testam uma unidade específica de código (geralmente uma função ou classe isolada).
+  - Exemplo: Testar se um método de soma retorna o valor correto.
+  
+- **Testes de Integração**: Testam a interação entre diferentes unidades de código, como interações com bancos de dados ou APIs externas.
+  - Exemplo: Testar se o envio de um email funciona quando o banco de dados é atualizado.
 
-```ini
-log_errors = On
-error_log = /path/to/php-error.log
-```
+- **Testes de API**: Testam se sua API está respondendo corretamente. Você pode usar PHPUnit para enviar requisições HTTP e verificar as respostas.
+  ```php
+  public function testApiReturnsJson() {
+      $response = file_get_contents('http://api.exemplo.com/endpoint');
+      $this->assertJson($response);
+  }
+  ```
 
-### Desabilitar exibição de erros em produção 🚫:
+#### **Testes de Comportamento com Behat**
+O **Behat** é uma ferramenta para **testes de comportamento** (BDD - Behavior-Driven Development) em PHP. Ele permite escrever testes que descrevem o comportamento esperado de uma aplicação em uma linguagem mais próxima do natural.
 
-```ini
-display_errors = Off
-```
+1. **Instalação do Behat**:
+   ```bash
+   composer require --dev behat/behat
+   ```
 
-### Ajuste de tempo de execução e upload de arquivos ⏳:
+2. **Escrevendo um Teste de Comportamento**:
+   Em `features/alguma_funcionalidade.feature`:
+   ```gherkin
+   Feature: Calculadora
+     In order to avoid mistakes
+     As a user
+     I want to be able to add two numbers
 
-```ini
-max_execution_time = 30
-upload_max_filesize = 10M
-```
+   Scenario: Add two numbers
+     Given I have entered 2
+     And I have entered 3
+     When I press add
+     Then the result should be 5
+   ```
 
----
+   Em seguida, crie os contextos do Behat para mapear os passos, como no arquivo `features/bootstrap/FeatureContext.php`.
 
-## Otimização de Desempenho ⚡
+#### **Mocking e Stubbing**
+- **Mocking**: Criação de objetos falsos (mocks) que simulam o comportamento de objetos reais, úteis para isolar partes do código durante os testes.
+  - Exemplo com PHPUnit:
+    ```php
+    $mock = $this->createMock(ClasseDependente::class);
+    $mock->method('metodo')->willReturn('valor');
+    ```
 
-A otimização de desempenho é crucial para garantir que seu sistema seja rápido e escalável 🚀. Algumas estratégias incluem:
+- **Stubbing**: Semelhante ao mocking, mas mais simples. Você cria um stub para retornar um valor específico quando um método é chamado.
+  - Exemplo com PHPUnit:
+    ```php
+    $stub = $this->createStub(ClasseDependente::class);
+    $stub->method('metodo')->willReturn('valor');
+    ```
 
-- **Caching**: Use **APCu**, **Memcached** ou **Redis** para armazenar resultados frequentemente acessados 📊.
-- **Minificação de arquivos**: Minifique arquivos **JavaScript**, **CSS** e **HTML** para reduzir o tamanho e melhorar o tempo de carregamento 🏃‍♂️.
-- **Uso de uma CDN (Content Delivery Network)**: Hospede seus arquivos estáticos (**imagens**, **JS**, **CSS**) em uma **CDN** para reduzir o tempo de resposta e distribuir o conteúdo mais rapidamente 🌍.
-
----
-
-## Uso de Ferramentas como Docker 🐳
-
-O **Docker** permite que você crie containers isolados para seu ambiente de desenvolvimento e produção, facilitando a implantação de aplicativos de forma consistente, independentemente do ambiente 🛠️.
-
-### Exemplo de configuração de Docker para PHP:
-
-Crie um arquivo **Dockerfile**:
-
-```Dockerfile
-FROM php:8.1-apache
-COPY . /var/www/html/
-```
-
-Crie um arquivo **docker-compose.yml**:
-
-```yaml
-version: '3.1'
-
-services:
-  web:
-    image: php:8.1-apache
-    container_name: my_php_app
-    volumes:
-      - .:/var/www/html
-    ports:
-      - "80:80"
-```
-
-### Para rodar o ambiente, use o comando 🚀:
-
-```bash
-docker-compose up
-```
-
----
-
-# 4. Hospedagem em Servidores 🌐
-
-Agora que o sistema está pronto, é hora de escolher um servidor e hospedar sua aplicação 🏡.
-
-## Configuração de servidores (**Apache** ou **Nginx**) 🌍
-
-O **Apache** e o **Nginx** são os servidores web mais comuns para hospedar aplicações PHP.
-
-### **Apache**:
-
-Se você estiver usando **Apache**, geralmente o arquivo de configuração será o **httpd.conf**. Alguns ajustes comuns incluem:
-
-- Habilitar o módulo **mod_rewrite** para **URL** amigáveis 🔗.
-- Definir permissões para os diretórios do seu projeto 🔐.
-
-### Exemplo:
-
-```bash
-sudo a2enmod rewrite
-```
-
-Certifique-se de que o arquivo `.htaccess` esteja configurado corretamente para URLs amigáveis 🌐.
-
-### **Nginx**:
-
-O **Nginx** é mais eficiente em termos de desempenho e é usado para balanceamento de carga e proxy reverso ⚡.
-
-## Exemplo de configuração para um site PHP:
-
-```nginx
-server {
-    listen 80;
-    server_name example.com;
-    root /var/www/html;
-
-    location / {
-        try_files $uri $uri/ /index.php?$args;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME /var/www/html$fastcgi_script_name;
-        include fastcgi_params;
-    }
-}
-```
+Mocking e stubbing são especialmente úteis em testes unitários, quando você precisa isolar o código testado de suas dependências externas.
 
 ---
 
-## Publicação em plataformas como Heroku ou **AWS** ☁️
-
-Essas plataformas fornecem uma maneira fácil de publicar e gerenciar sua aplicação.
-
-### **Heroku**:
-
-- Crie uma conta no **Heroku** e instale o **Heroku CLI**.
-
-### Faça o login:
-
-```bash
-heroku login
-```
-
-### Crie um novo aplicativo:
-
-```bash
-heroku create my-php-app
-```
-
-### Empurre o código para o Heroku:
-
-```bash
-git push heroku main
-```
-
-### **AWS** (Amazon Web Services):
-
-Para hospedar em **AWS**, você pode usar o Amazon EC2 para criar servidores virtuais, S3 para armazenamento de arquivos, e RDS para bancos de dados 🖥️.
-
----
-
-# Conclusão 🎯
-
-A fase de testes e implantação garante que seu sistema esteja robusto, escalável e pronto para produção ⚡. Testes automatizados ajudam a detectar erros antecipadamente, enquanto as boas práticas de otimização de desempenho e configuração de ambientes de produção garantem que o sistema funcione com alta qualidade 💎.
-
-Hospedar o sistema em servidores e plataformas como **Heroku** ou **AWS** facilita a gestão e escalabilidade da aplicação 🌍🚀.
+Esses são os fundamentos de **Composer** para gerenciamento de dependências e **testes em PHP** com PHPUnit, Behat, mocking e stubbing. Eles são essenciais para manter seu código modular, escalável e confiável, além de garantir que suas aplicações funcionem corretamente em todos os cenários.

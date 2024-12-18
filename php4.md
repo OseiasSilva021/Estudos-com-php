@@ -1,217 +1,240 @@
-# 🚀 PHP Orientado a Objetos (OOP)
+# 📚 Fase 2: Conceitos Intermediários de Programação
 
-## 📌 Introdução
+## 💡 Funções e Escopos
 
-Programação Orientada a Objetos (OOP) é um paradigma que organiza código em classes e objetos, promovendo:
-- 🔁 Reutilização de código
-- 🛠️ Manutenibilidade
-- 📦 Organização estrutural
+### 🔥 Funções Anônimas e Closures
 
-## 1. Classes e Objetos 📦
+- **Funções Anônimas**: São funções sem nome, normalmente usadas como parâmetros ou atribuídas a variáveis. Útil para comportamentos temporários.
+  ```php
+  $soma = function($a, $b) {
+      return $a + $b;
+  };
+  echo $soma(2, 3); // Saída: 5
+  ```
 
-### Definição
-- **Classe**: Molde para criar objetos
-- **Objeto**: Instância de uma classe
+- **Closures**: São funções que capturam variáveis do escopo onde foram definidas. Elas podem acessar e modificar essas variáveis.
+  ```php
+  $valor = 10;
+  $multiplicar = function($a) use ($valor) {
+      return $a * $valor;
+  };
+  echo $multiplicar(2); // Saída: 20
+  ```
 
-### Exemplo Básico
-```php
-class Car {
-    public $color; // Propriedade
+### 🔄 Passagem por Valor e Referência
 
-    public function drive() { // Método
-        echo "The car is driving.";
-    }
-}
+- **Passagem por Valor**: A função recebe uma cópia do valor da variável. Alterações dentro da função não afetam a variável original.
+  ```php
+  function dobrar($num) {
+      $num = $num * 2;
+  }
+  $x = 5;
+  dobrar($x);
+  echo $x; // Saída: 5
+  ```
 
-$car = new Car(); // Criando um objeto
-$car->color = "Red"; // Definindo valor da propriedade
-echo $car->color; // Acessando a propriedade
-$car->drive(); // Chamando o método
-```
+- **Passagem por Referência**: A função recebe uma referência da variável, permitindo modificar seu valor original.
+  ```php
+  function dobrar(&$num) {
+      $num = $num * 2;
+  }
+  $x = 5;
+  dobrar($x);
+  echo $x; // Saída: 10
+  ```
 
-## 2. Propriedades e Métodos 🛠️
+### 🔄 Funções Recursivas
 
-### Propriedades
-Variáveis que armazenam dados relacionados ao objeto.
+Funções recursivas chamam a si mesmas. Elas são úteis para problemas que podem ser divididos em subproblemas similares, como o cálculo do fatorial.
+  ```php
+  function fatorial($n) {
+      if ($n <= 1) {
+          return 1;
+      }
+      return $n * fatorial($n - 1);
+  }
+  echo fatorial(5); // Saída: 120
+  ```
 
-### Métodos
-Funções que definem comportamentos do objeto.
+---
 
-### Exemplo
-```php
-class Person {
-    public $name; // Propriedade
-    public $age;
+## 🧩 Orientação a Objetos (OOP)
 
-    public function greet() { // Método
-        echo "Hello, my name is " . $this->name;
-    }
-}
+### 🏗️ Definição de Classes e Objetos
 
-$person = new Person();
-$person->name = "John";
-$person->greet(); // Hello, my name is John
-```
+- **Classe**: Modelo ou estrutura que define propriedades e comportamentos dos objetos.
+  ```php
+  class Carro {
+      public $cor;
+      public $modelo;
+  
+      public function ligar() {
+          echo "Carro ligado!";
+      }
+  }
+  $carro = new Carro();
+  $carro->cor = 'azul';
+  $carro->modelo = 'Fusca';
+  $carro->ligar(); // Saída: Carro ligado!
+  ```
 
-## 3. Visibilidade 🔐
+- **Objeto**: Instância de uma classe. No exemplo, `$carro` é um objeto da classe `Carro`.
 
-### Tipos de Visibilidade
-- **public**: Acessível de qualquer lugar
-- **private**: Acessível apenas dentro da classe
-- **protected**: Acessível na classe e subclasses
+### 🛠️ Construtores e Destruidores
 
-### Exemplo
-```php
-class BankAccount {
-    private $balance = 0; // Somente a classe pode acessar
+- **Construtores**: Inicializam o objeto no momento de sua criação.
+  ```php
+  class Carro {
+      public $modelo;
+  
+      public function __construct($modelo) {
+          $this->modelo = $modelo;
+      }
+  }
+  $carro = new Carro("Fusca");
+  echo $carro->modelo; // Saída: Fusca
+  ```
 
-    public function deposit($amount) {
-        $this->balance += $amount;
-    }
+- **Destruidores**: São chamados quando o objeto é destruído, frequentemente usados para liberar recursos.
+  ```php
+  class Carro {
+      public function __destruct() {
+          echo "Carro destruído!";
+      }
+  }
+  $carro = new Carro();
+  unset($carro); // Saída: Carro destruído!
+  ```
 
-    public function getBalance() {
-        return $this->balance;
-    }
-}
+### 🔑 Propriedades e Métodos
 
-$account = new BankAccount();
-$account->deposit(100);
-echo $account->getBalance(); // 100
-```
+- **Propriedades**: Variáveis dentro de uma classe que guardam o estado do objeto.
+- **Métodos**: Funções que definem os comportamentos dos objetos.
+  ```php
+  class Carro {
+      public $cor;
+  
+      public function pintar($cor) {
+          $this->cor = $cor;
+      }
+  }
+  $carro = new Carro();
+  $carro->pintar('vermelho');
+  echo $carro->cor; // Saída: vermelho
+  ```
 
-## 4. Herança 🌳
+### 🔓 Visibilidade (Público, Privado, Protegido)
 
-### Conceito
-- Permite que uma classe herde propriedades e métodos de outra
-- **Subclasse**: Classe que herda
-- **Superclasse**: Classe herdada
+- **Público** (`public`): Pode ser acessado de qualquer lugar.
+- **Privado** (`private`): Só pode ser acessado dentro da classe.
+- **Protegido** (`protected`): Acessível dentro da classe e por classes filhas.
+  ```php
+  class Carro {
+      private $modelo;
+  
+      public function setModelo($modelo) {
+          $this->modelo = $modelo;
+      }
+  
+      public function getModelo() {
+          return $this->modelo;
+      }
+  }
+  ```
 
-### Exemplo
-```php
-class Animal {
-    public function eat() {
-        echo "Eating...";
-    }
-}
+### 🧬 Herança, Polimorfismo e Encapsulamento
 
-class Dog extends Animal {
-    public function bark() {
-        echo "Barking...";
-    }
-}
+- **Herança**: Permite que uma classe herde as propriedades e métodos de outra.
+  ```php
+  class Carro {
+      public $modelo;
+      public function ligar() {
+          echo "Carro ligado!";
+      }
+  }
+  class CarroEsportivo extends Carro {
+      public function acelerar() {
+          echo "Acelerando!";
+      }
+  }
+  ```
 
-$dog = new Dog();
-$dog->eat(); // Método herdado
-$dog->bark(); // Método próprio
-```
+- **Polimorfismo**: Permite que a mesma ação tenha comportamentos diferentes em classes distintas.
+  ```php
+  class Animal {
+      public function falar() {
+          echo "Animal falando";
+      }
+  }
+  class Cachorro extends Animal {
+      public function falar() {
+          echo "Au Au!";
+      }
+  }
+  ```
 
-## 5. Interfaces e Classes Abstratas 📋
+- **Encapsulamento**: Controla o acesso a propriedades e métodos da classe, protegendo o estado interno.
+  ```php
+  class ContaBancaria {
+      private $saldo;
+  
+      public function depositar($valor) {
+          $this->saldo += $valor;
+      }
+  
+      public function getSaldo() {
+          return $this->saldo;
+      }
+  }
+  ```
 
-### Interface
-Contrato que define métodos sem implementação.
+### 📝 Interfaces e Classes Abstratas
 
-```php
-interface Logger {
-    public function log($message);
-}
+- **Interface**: Define um contrato para classes implementarem, ou seja, uma lista de métodos obrigatórios.
+  ```php
+  interface Veiculo {
+      public function mover();
+  }
+  class Carro implements Veiculo {
+      public function mover() {
+          echo "Carro em movimento";
+      }
+  }
+  ```
 
-class FileLogger implements Logger {
-    public function log($message) {
-        echo "Logging to a file: $message";
-    }
-}
-```
+- **Classe Abstrata**: Não pode ser instanciada diretamente e pode conter métodos abstratos.
+  ```php
+  abstract class Forma {
+      abstract public function desenhar();
+  }
+  
+  class Circulo extends Forma {
+      public function desenhar() {
+          echo "Desenhando círculo";
+      }
+  }
+  ```
 
-### Classe Abstrata
-Base para outras classes, pode conter métodos implementados ou abstratos.
+### ⚙️ Traits
 
-```php
-abstract class Shape {
-    abstract public function calculateArea(); // Método abstrato
+- **Traits**: Permitem que métodos sejam compartilhados entre várias classes sem a necessidade de herança.
+  ```php
+  trait Aceleracao {
+      public function acelerar() {
+          echo "Acelerando!";
+      }
+  }
+  
+  class Carro {
+      use Aceleracao;
+  }
+  
+  $carro = new Carro();
+  $carro->acelerar(); // Saída: Acelerando!
+  ```
 
-    public function describe() {
-        echo "I am a shape.";
-    }
-}
+---
 
-class Circle extends Shape {
-    public function calculateArea() {
-        return 3.14 * 5 * 5;
-    }
-}
-```
+## 🚀 Conclusão
 
-## 6. Namespaces e Autoloading (PSR-4) 🗂️
-
-### Namespaces
-Organizam classes em grupos lógicos.
-
-```php
-namespace App\Models;
-
-class User {
-    public function getName() {
-        return "John Doe";
-    }
-}
-
-// Uso
-use App\Models\User;
-$user = new User();
-```
-
-### Autoloading com Composer
-
-#### 1. Estrutura de Diretórios
-```
-src/
-├── Models/
-│   └── User.php
-└── Controllers/
-    └── HomeController.php
-```
-
-#### 2. Configuração composer.json
-```json
-{
-    "autoload": {
-        "psr-4": {
-            "App\\": "src/"
-        }
-    }
-}
-```
-
-#### 3. Comandos Composer
-```bash
-# Gerar autoload
-composer dump-autoload
-
-# Usar no código
-require 'vendor/autoload.php';
-
-use App\Models\User;
-$user = new User();
-```
-
-## 🌟 Boas Práticas
-
-- 📦 Use classes para organizar código
-- 🔒 Utilize visibilidade adequada
-- 🔁 Aproveite herança e composição
-- 🤝 Implemente interfaces quando apropriado
-- 🧩 Mantenha classes coesas e com responsabilidades únicas
-
-## 📚 Recursos Adicionais
-
-- [Documentação Oficial PHP - OOP](https://www.php.net/manual/pt_BR/language.oop5.php)
-- [PSR-4 Autoloader](https://www.php-fig.org/psr/psr-4/)
-- [Composer Autoloading](https://getcomposer.org/doc/04-schema.md#autoload)
-
-## 🤝 Contribuições
-
-Contribuições são bem-vindas! Abra issues ou envie pull requests.
-
-## 📄 Licença
-
-[Inserir informações da licença]
+Esses conceitos são essenciais para dominar a programação orientada a objetos e criar soluções robustas e reutilizáveis! Aprofundar-se nesses tópicos ajudará a transformar você em um programador mais completo e eficiente. Continue praticando e explorando novas possibilidades! 💻✨

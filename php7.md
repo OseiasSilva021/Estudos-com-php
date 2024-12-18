@@ -1,198 +1,202 @@
 
-# 🌐 **APIs e Integrações: Criar e Consumir APIs RESTful com PHP** 🚀
+# 🚀 Fase 3: Tópicos Avançados
 
-## 1. 🛠️ **Criação de uma API RESTful** 🖥️
+Na **Fase 3**, exploramos tópicos mais avançados em PHP que são essenciais para criar sistemas robustos, escaláveis e flexíveis. Vamos abordar conceitos cruciais como **Padrões de Projeto** (Design Patterns), **Autoloading** e **PSR-4**, que ajudarão a organizar e melhorar o seu código! 😎
 
-Criar uma **API RESTful** com **PHP** envolve estruturar endpoints que seguem os padrões **REST**. As **APIs RESTful** utilizam os métodos **HTTP** (**GET**, **POST**, **PUT**, **DELETE**) para realizar operações em recursos. Para isso, é necessário:
+## 🛠️ Padrões de Projeto (Design Patterns)
 
-### 🗂️ **Estruturar o Projeto**:
-Organize os arquivos em pastas para separação lógica. Exemplo:
+**Padrões de Projeto** são soluções comprovadas para problemas recorrentes no desenvolvimento de software. Eles tornam o código mais modular, reutilizável e fácil de entender. Vamos ver alguns padrões populares no PHP:
 
-```bash
-/api
-   /controllers
-   /models
-   /routes
-   /public (index.php)
-```
-
-### 🔧 **Configurar o Roteamento**:
-Use bibliotecas como **Slim Framework** ou **Laravel**, ou implemente manualmente um roteador. O roteador associa os endpoints às funções apropriadas.
-
-### 🏗️ **Definir o Banco de Dados**:
-Utilize **PDO** ou uma **ORM** como **Eloquent** para interagir com o banco de dados.
-
-### 📡 **Exemplo de Endpoint Básico**:
+### 1. **Singleton** 🏠
+- **Objetivo**: Garantir que uma classe tenha **apenas uma instância** e fornecer um ponto global de acesso a ela.
+- **Exemplo**: Gerenciar a conexão com o banco de dados.
 
 ```php
-header('Content-Type: application/json');
+class Database {
+    private static $instance = null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    echo json_encode(['message' => 'API funcionando!']);
+    private function __construct() {
+        // Inicializa a conexão com o banco de dados
+    }
+
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new Database();
+        }
+        return self::$instance;
+    }
 }
 ```
 
----
-
-## 2. 🔄 **Métodos HTTP: GET, POST, PUT, DELETE** ⚙️
-
-### 📚 **Cada método é utilizado para uma ação específica**:
-
-- **GET**: Recupera dados 📑
-- **POST**: Cria novos dados ✍️
-- **PUT**: Atualiza dados existentes 🔄
-- **DELETE**: Remove dados ❌
-
-### 🧑‍💻 **Exemplo com PHP puro para cada método**:
+### 2. **Factory** 🏭
+- **Objetivo**: Criar objetos **sem precisar especificar a classe exata**.
+- **Exemplo**: Criar diferentes tipos de produtos em um e-commerce.
 
 ```php
-header('Content-Type: application/json');
+interface Product {
+    public function create();
+}
 
-switch ($_SERVER['REQUEST_METHOD']) {
-    case 'GET':
-        echo json_encode(['message' => 'Recuperar dados']);
-        break;
-    case 'POST':
-        echo json_encode(['message' => 'Criar dados']);
-        break;
-    case 'PUT':
-        echo json_encode(['message' => 'Atualizar dados']);
-        break;
-    case 'DELETE':
-        echo json_encode(['message' => 'Deletar dados']);
-        break;
-    default:
-        http_response_code(405); // Método não permitido
-        echo json_encode(['error' => 'Método não suportado']);
+class ConcreteProductA implements Product {
+    public function create() {
+        return "Produto A criado!";
+    }
+}
+
+class ConcreteProductB implements Product {
+    public function create() {
+        return "Produto B criado!";
+    }
+}
+
+class ProductFactory {
+    public static function createProduct($type) {
+        if ($type == 'A') {
+            return new ConcreteProductA();
+        } else {
+            return new ConcreteProductB();
+        }
+    }
 }
 ```
 
----
-
-## 3. 🔄 **Serialização com JSON** 📦
-
-A **serialização** transforma objetos ou arrays em um formato **JSON** para serem enviados pela **API**.
-
-### 📝 **Para respostas**:
+### 3. **Strategy** 🎯
+- **Objetivo**: Permitir a seleção de um **algoritmo em tempo de execução**.
+- **Exemplo**: Calcular diferentes formas de **desconto** em um sistema de vendas.
 
 ```php
-$data = ['nome' => 'Oséias', 'idade' => 18];
-echo json_encode($data);
-```
+interface DiscountStrategy {
+    public function calculate($amount);
+}
 
-### 📥 **Para requisições**:
+class NoDiscount implements DiscountStrategy {
+    public function calculate($amount) {
+        return $amount;
+    }
+}
 
-```php
-$json = file_get_contents('php://input');
-$data = json_decode($json, true); // Decodifica em array
-```
+class PercentageDiscount implements DiscountStrategy {
+    public function calculate($amount) {
+        return $amount * 0.9; // 10% de desconto
+    }
+}
 
-### ⚡ **Dicas**:
-- Sempre use **json_encode()** para enviar respostas.
-- Utilize **json_decode()** com o parâmetro **true** para **arrays** associativos.
+class DiscountContext {
+    private $strategy;
 
----
+    public function __construct(DiscountStrategy $strategy) {
+        $this->strategy = $strategy;
+    }
 
-## 4. 🔐 **Autenticação de APIs com JWT** 🔑
-
-**JWT (JSON Web Token)** é um método comum de autenticação em **APIs**. Um token **JWT** contém informações codificadas que o servidor verifica para autenticar um usuário.
-
-### 🛠️ **Passos para implementar JWT em PHP**:
-
-#### 🔄 **Instalar a Biblioteca**:
-Use **Firebase JWT**. Instale via **Composer**:
-
-```bash
-composer require firebase/php-jwt
-```
-
-#### 📝 **Gerar o Token**:
-
-```php
-use Firebase\JWT\JWT;
-
-$payload = [
-    'iss' => 'localhost',
-    'iat' => time(),
-    'exp' => time() + (60 * 60), // Expira em 1 hora
-    'user_id' => 123
-];
-$secretKey = 'sua_chave_secreta';
-$jwt = JWT::encode($payload, $secretKey, 'HS256');
-echo $jwt;
-```
-
-#### 🛡️ **Validar o Token**:
-
-```php
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-
-$jwt = $_SERVER['HTTP_AUTHORIZATION']; // Token enviado no cabeçalho
-try {
-    $decoded = JWT::decode($jwt, new Key('sua_chave_secreta', 'HS256'));
-    print_r($decoded);
-} catch (Exception $e) {
-    http_response_code(401);
-    echo json_encode(['error' => 'Token inválido']);
+    public function applyDiscount($amount) {
+        return $this->strategy->calculate($amount);
+    }
 }
 ```
 
----
-
-## 5. 🌍 **Consumo de APIs Externas** 🔌
-
-Para consumir **APIs** externas, use a biblioteca **cURL** ou **Guzzle**.
-
-### 🌐 **cURL (Padrão do PHP)**:
+### 4. **Observer** 👀
+- **Objetivo**: Permitir que **objetos sejam notificados** quando o estado de outro objeto mudar.
+- **Exemplo**: Sistemas de **notificações**.
 
 ```php
-$url = "https://api.exemplo.com/dados";
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-$response = curl_exec($ch);
-curl_close($ch);
+interface Observer {
+    public function update($message);
+}
 
-$data = json_decode($response, true);
-print_r($data);
+class ConcreteObserver implements Observer {
+    public function update($message) {
+        echo "Notificação recebida: $message";
+    }
+}
+
+class Subject {
+    private $observers = [];
+
+    public function addObserver(Observer $observer) {
+        $this->observers[] = $observer;
+    }
+
+    public function notify($message) {
+        foreach ($this->observers as $observer) {
+            $observer->update($message);
+        }
+    }
+}
 ```
 
-### ⚡ **Guzzle (Mais Moderno)**:
+### 5. **MVC (Model-View-Controller)** 🖥️
+- **Objetivo**: Separar a lógica de **negócio**, **interface do usuário** e **controle**.
+- **Exemplo**: Uma das arquiteturas mais populares para desenvolvimento de **aplicativos web**.
 
-#### 🔧 **Instale via Composer**:
+- **Modelo**: Representa os **dados** e a lógica de **negócios**.
+- **Visão**: Exibe os **dados** para o **usuário**.
+- **Controlador**: Gerencia as interações entre **visão** e **modelo**.
 
-```bash
-composer require guzzlehttp/guzzle
-```
+---
 
-#### 📝 **Exemplo**:
+## 🔧 Autoloading e PSR-4
+
+### **Autoloading** no PHP
+O **autoloading** permite carregar classes automaticamente quando necessário, sem a necessidade de usar `require` ou `include` manualmente. Isso facilita a organização e a performance do código.
+
+### **Usando `spl_autoload_register()`** 🔄
+A função `spl_autoload_register()` permite registrar uma função de autoload personalizada. Quando o PHP encontra uma classe que ainda não foi carregada, ele chama essa função para carregá-la automaticamente.
 
 ```php
-use GuzzleHttp\Client;
+function myAutoloader($class) {
+    include 'classes/' . $class . '.class.php';
+}
 
-$client = new Client();
-$response = $client->request('GET', 'https://api.exemplo.com/dados');
-$data = json_decode($response->getBody(), true);
-print_r($data);
+spl_autoload_register('myAutoloader');
 ```
 
+### **Implementando PSR-4 para Autoloading** 📦
+O PSR-4 define uma abordagem para organizar e carregar classes de forma padronizada, utilizando **namespaces** e **diretórios**.
+
+#### Estrutura de Diretórios:
+```
+src/
+    Acme/
+        Foo.php
+        Bar.php
+```
+
+#### Exemplo de Código PHP:
+```php
+namespace Acme;
+
+class Foo {
+    public function __construct() {
+        echo "Classe Foo!";
+    }
+}
+```
+
+#### Arquivo `composer.json`:
+```json
+{
+    "autoload": {
+        "psr-4": {
+            "Acme\\": "src/Acme/"
+        }
+    }
+}
+```
+
+Após rodar o comando `composer dump-autoload`, o Composer cuidará do autoloading automaticamente!
+
 ---
 
-## 6. 🛠️ **Boas Práticas** ✅
+## 📝 Resumo
 
-- **Organize os códigos**: Utilize **MVC** ou **frameworks** (**Laravel**).
-- **Documentação**: Crie documentação com ferramentas como **Swagger**.
-- **Validação**: Valide os dados de entrada 🛡️.
-- **Erros**: Retorne códigos de status **HTTP** apropriados (200, 400, 401, 404, 500).
+- **Padrões de Projeto (Design Patterns)** são soluções estruturadas para problemas comuns, ajudando na manutenção e flexibilidade do código.
+- **Autoloading** facilita o carregamento automático de classes, melhorando a organização e performance.
+- **PSR-4** define como as classes devem ser organizadas em diretórios e como o autoloading funciona de maneira eficiente com o Composer.
 
----
-
-## 7. 🔒 **Segurança** ⚠️
-
-- Use **HTTPS** 🔐.
-- Não exponha informações sensíveis no token 🔑.
-- Utilize limites de requisição (**rate-limiting**) ⏳.
+Esses conceitos são essenciais para se tornar um **desenvolvedor PHP** mais eficiente e profissional. 🙌
 
 ---
 
-Criar e consumir APIs RESTful com PHP é uma habilidade essencial para desenvolvedores que trabalham com integrações. Seguindo essas práticas e dicas, você estará mais preparado para construir APIs seguras e eficientes! 💪🚀
+🔗 **Links Úteis**:
+- [PHP Design Patterns](https://refactoring.guru/design-patterns/php)
+- [PSR-4 Autoloading Standard](https://www.php-fig.org/psr/psr-4/)
